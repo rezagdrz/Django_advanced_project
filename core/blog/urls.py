@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index_view , IndexView , RedirectToDjango , PostList , PostDetailView
+from .views import index_view , IndexView , RedirectToDjango , PostList , PostDetailView , PostCreateView
 
 app_name = 'blog'
 
@@ -10,4 +10,5 @@ urlpatterns = [
     path("go-to-django/<int:pk>",RedirectToDjango.as_view(),name="go-to-django",),
     path('post/',PostList.as_view(),name="post_list"),
     path('post/<int:pk>/',PostDetailView.as_view(),name='post-detail'),
+    path('post-create/',PostCreateView.as_view(),name='post-create'),
 ]

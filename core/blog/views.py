@@ -5,6 +5,9 @@ from .models import Post
 from django.views.generic.list import ListView 
 from django.views.generic.detail import DetailView
 from django.utils import timezone
+from django.views.generic.edit import FormView
+from .forms import PostForm
+from django.views.generic.edit import CreateView
 
 def index_view(request):
     context = {'name':'hasan'}
@@ -39,4 +42,23 @@ class PostDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context["now"] = timezone.now()
         return context
+"""
+class PostCreate(FormView):
+    template_name = "blog/contact.html"
+    form_class = PostForm
+    success_url = "/post/"
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+"""
+class PostCreateView(CreateView):
+    model = Post
+    template_name = 'blog/contact.html'
+    form_class = PostForm
+    success_url = '/post/'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 # Create your views here.
