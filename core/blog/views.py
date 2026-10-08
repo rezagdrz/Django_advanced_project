@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.views.generic.edit import FormView
 from .forms import PostForm
 from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin , PermissionRequiredMixin
 
 def index_view(request):
     context = {'name':'hasan'}
@@ -30,19 +31,20 @@ class RedirectToDjango(RedirectView):
         print(post.category)
         return super().get_redirect_url(self,*args,*kwargs)
     
-class PostList(ListView):
+class PostList(LoginRequiredMixin,ListView):
     context_object_name = "posts"
+    paginate_by = 3
     ordering = '-pk'
     model = Post
 
-class PostDetailView(DetailView):
+class PostDetailView(LoginRequiredMixin,DetailView):
     model = Post
     context_object_name = 'post'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["now"] = timezone.now()
         return context
-"""
+
 class PostCreate(FormView):
     template_name = "blog/contact.html"
     form_class = PostForm
@@ -51,7 +53,7 @@ class PostCreate(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
-"""
+
 class PostCreateView(CreateView):
     model = Post
     form_class = PostForm
@@ -61,12 +63,14 @@ class PostCreateView(CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
-class PostEditView(UpdateView):
+class PostEditView(PermissionRequiredMixin,UpdateView):
     model = Post
     form_class = PostForm
     success_url = '/post/' 
+    permission_required = 'post.edit_choice'
 
-class PostDeleteView(DeleteView):
+class PostDeleteView(PermissionRequiredMixin,DeleteView):
     model = Post
     success_url = '/post/'
+    permission_required = 'post.delete_choice'
 # Create your views here.

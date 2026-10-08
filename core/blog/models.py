@@ -3,12 +3,12 @@ from django.contrib.auth import get_user_model
 '''
 these are some class to define Post and Category for app blog 
 '''
-User = get_user_model()
+#User = get_user_model()
 class Post(models.Model):
     title = models.CharField(max_length=250)
     image = models.ImageField(null=True,blank=True)
     content = models.TextField()
-    author = models.ForeignKey(User,on_delete=models.CASCADE ,default= 1 )
+    author = models.ForeignKey('accounts.Profile',on_delete=models.CASCADE ,default= 1 )
     status = models.BooleanField()
     category = models.ForeignKey('Category',on_delete=models.SET_NULL,null=True)
     created_date = models.DateTimeField(auto_now_add=True)
