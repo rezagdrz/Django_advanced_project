@@ -1,6 +1,8 @@
-from django.shortcuts import render , get_object_or_404 
+from django.shortcuts import render , get_object_or_404  
 from django.urls import reverse
 from django.views.generic import TemplateView , RedirectView , UpdateView , DeleteView
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .models import Post
 from django.views.generic.list import ListView 
 from django.views.generic.detail import DetailView
@@ -73,4 +75,8 @@ class PostDeleteView(PermissionRequiredMixin,DeleteView):
     model = Post
     success_url = '/post/'
     permission_required = 'post.delete_choice'
+
+@api_view()
+def api_index_view(request):
+    return Response({"name":'ali'})
 # Create your views here.
