@@ -6,17 +6,24 @@ from .serializer import PostSerializer
 from ...models import Post
 from django.shortcuts import get_object_or_404
 
-@api_view()
+@api_view(['GET', 'POST'])
 def postList(request):
-    post = Post.objects.filter(status=True)
-    post = PostSerializer(post,many=True)
-    return Response(post.data)
+    
+    if request.method == 'GET':
+        post = Post.objects.filter(status=True)
+        post = PostSerializer(post,many=True)
+        return Response(post.data)
+    elif request.method == 'POST':
+        post = PostSerializer(data=request.data)
+        post.is_valid(raise_exception=True)
+        post.save()
+        return Response(post.data)
 
 @api_view()
 def postDetail(request,id):
     post = get_object_or_404(Post,pk=id)
     post = PostSerializer(post)
-    return Response(post.data)
+    return Response(post.data,status=status.HTTP_201_CREATED)
 
 #another way to show doesnot exist Post
 '''
