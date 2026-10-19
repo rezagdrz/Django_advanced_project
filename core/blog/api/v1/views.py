@@ -1,12 +1,14 @@
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view , permission_classes
 from rest_framework import status
 from rest_framework.response import Response
 from .serializer import PostSerializer
 from ...models import Post
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated , IsAuthenticatedOrReadOnly
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def postList(request):
     
     if request.method == 'GET':
@@ -19,11 +21,22 @@ def postList(request):
         post.save()
         return Response(post.data)
 
-@api_view()
+@api_view(['GET','PUT','DELETE'])
+@permission_classes([IsAuthenticated])
 def postDetail(request,id):
     post = get_object_or_404(Post,pk=id)
-    post = PostSerializer(post)
-    return Response(post.data,status=status.HTTP_201_CREATED)
+    if request.method == 'GET':
+        serializer = PostSerializer(post)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    elif request.method == 'PUT':
+        serializer = PostSerializer(post,data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    elif request.method == 'DELETE':
+        post.delete()
+        return Response( status=status.HTTP_204_NO_CONTENT)
+
 
 #another way to show doesnot exist Post
 '''
