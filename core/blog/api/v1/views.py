@@ -6,11 +6,14 @@ from .serializer import PostSerializer
 from ...models import Post
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated , IsAuthenticatedOrReadOnly
+from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView , ListCreateAPIView , RetrieveUpdateDestroyAPIView
+from rest_framework.mixins import ListModelMixin , RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin
 
+"""
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def postList(request):
-    
     if request.method == 'GET':
         post = Post.objects.filter(status=True)
         post = PostSerializer(post,many=True)
@@ -37,9 +40,7 @@ def postDetail(request,id):
         post.delete()
         return Response( status=status.HTTP_204_NO_CONTENT)
 
-
 #another way to show doesnot exist Post
-'''
 @api_view()
 def postDetail(request,id):
     try:
@@ -49,4 +50,20 @@ def postDetail(request,id):
     
     except Post.DoesNotExist:
         return Response({'datail':'this post does not exist'},status=status.HTTP_404_NOT_FOUND)
-'''
+"""
+
+class PostList(ListCreateAPIView):
+    """a class for getting and creating posts"""
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class =PostSerializer
+    queryset = Post.objects.filter(status=True)
+
+
+
+class PostDetail(RetrieveUpdateDestroyAPIView):
+    """a class for getting post detail and edit and removing it"""
+    permission_classes = [IsAuthenticated]
+    serializer_class =PostSerializer
+    queryset = Post.objects.filter(status=True)
+    
+    
