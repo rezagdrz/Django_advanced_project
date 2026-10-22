@@ -2,8 +2,8 @@
 from rest_framework.decorators import api_view , permission_classes
 from rest_framework import status
 from rest_framework.response import Response
-from .serializer import PostSerializer
-from ...models import Post
+from .serializer import PostSerializer , CategorySerializer
+from ...models import Post , Category
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated , IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
@@ -50,10 +50,10 @@ def postDetail(request,id):
     
     except Post.DoesNotExist:
         return Response({'datail':'this post does not exist'},status=status.HTTP_404_NOT_FOUND)
-"""
+
 
 class PostList(ListCreateAPIView):
-    """a class for getting and creating posts"""
+    '''a class for getting and creating posts'''
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class =PostSerializer
     queryset = Post.objects.filter(status=True)
@@ -61,7 +61,7 @@ class PostList(ListCreateAPIView):
 
 
 class PostDetail(RetrieveUpdateDestroyAPIView):
-    """a class for getting post detail and edit and removing it"""
+    '''a class for getting post detail and edit and removing it'''
     permission_classes = [IsAuthenticated]
     serializer_class =PostSerializer
     queryset = Post.objects.filter(status=True)
@@ -71,7 +71,8 @@ class PostListViewSet(viewsets.ViewSet):
     serializer_class =PostSerializer
     queryset = Post.objects.filter(status=True)
     def list(self,requset):
-        serializer = self.serializer_class(self.queryset, many=True)
+        queryset = Post.objects.filter(status=True)
+        serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
     def create(self,request):
@@ -79,6 +80,7 @@ class PostListViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
 
 class PostDetailViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
@@ -101,4 +103,17 @@ class PostDetailViewSet(viewsets.ViewSet):
         post = get_object_or_404(self.queryset,pk=pk)
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+"""
+
+class PostModelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class =PostSerializer
+    queryset = Post.objects.filter(status=True)
+    
+class CategoryModelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class =CategorySerializer
+    queryset = Category.objects.all()
+
+
     
