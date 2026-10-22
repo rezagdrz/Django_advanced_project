@@ -8,8 +8,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated , IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView , ListCreateAPIView , RetrieveUpdateDestroyAPIView
-from rest_framework.mixins import ListModelMixin , RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin
-
+from rest_framework.mixins import ListModelMixin , RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin , CreateModelMixin
+from rest_framework import viewsets
 """
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -65,5 +65,40 @@ class PostDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class =PostSerializer
     queryset = Post.objects.filter(status=True)
+
+class PostListViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class =PostSerializer
+    queryset = Post.objects.filter(status=True)
+    def list(self,requset):
+        serializer = self.serializer_class(self.queryset, many=True)
+        return Response(serializer.data)
+
+    def create(self,request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+class PostDetailViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class =PostSerializer
+    queryset = Post.objects.filter(status=True)
+
+    def retrieve(self,request, pk=None):
+        post = get_object_or_404(self.queryset,pk=pk)
+        serializer = self.serializer_class(post)
+        return Response(serializer.data)
     
+    def update(self,request, pk=None):
+        post = get_object_or_404(self.queryset,pk=pk)
+        serializer = self.serializer_class(post,data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def destroy(self,request, pk=None):
+        post = get_object_or_404(self.queryset,pk=pk)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
