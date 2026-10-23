@@ -1,15 +1,17 @@
 
-from rest_framework.decorators import api_view , permission_classes
+from rest_framework.decorators import api_view , permission_classes , action
 from rest_framework import status
 from rest_framework.response import Response
 from .serializer import PostSerializer , CategorySerializer
 from ...models import Post , Category
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticated , IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated , IsAuthenticatedOrReadOnly 
+from .permissions import AuthorAllStaffAllButEditOrReadOnly
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView , ListCreateAPIView , RetrieveUpdateDestroyAPIView
 from rest_framework.mixins import ListModelMixin , RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin , CreateModelMixin
 from rest_framework import viewsets
+from rest_framework.permissions import BasePermission
 """
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -106,9 +108,19 @@ class PostDetailViewSet(viewsets.ViewSet):
 """
 
 class PostModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AuthorAllStaffAllButEditOrReadOnly ]
     serializer_class =PostSerializer
     queryset = Post.objects.filter(status=True)
+        
+
+    
+    @action(detail=False,methods=['get'])
+    def get_last_post(self,request):
+        post =Post.objects.filter(status=True).order_by('-id').first()
+        if post is None:
+            return Response({'detail':'there are no posts '},status=status.HTTP_404_NOT_FOUND)
+        serializer = self.serializer_class(post)
+        return Response(serializer.data)
     
 class CategoryModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
