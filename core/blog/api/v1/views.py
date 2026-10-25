@@ -12,6 +12,8 @@ from rest_framework.generics import GenericAPIView , ListCreateAPIView , Retriev
 from rest_framework.mixins import ListModelMixin , RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin , CreateModelMixin
 from rest_framework import viewsets
 from rest_framework.permissions import BasePermission
+
+
 """
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -111,9 +113,7 @@ class PostModelViewSet(viewsets.ModelViewSet):
     permission_classes = [AuthorAllStaffAllButEditOrReadOnly ]
     serializer_class =PostSerializer
     queryset = Post.objects.filter(status=True)
-        
 
-    
     @action(detail=False,methods=['get'])
     def get_last_post(self,request):
         post =Post.objects.filter(status=True).order_by('-id').first()
