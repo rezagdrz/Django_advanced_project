@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from .serializer import PostSerializer , CategorySerializer
 from ...models import Post , Category
+from accounts.models import Profile , User
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated , IsAuthenticatedOrReadOnly 
 from .permissions import AuthorAllStaffAllButEditOrReadOnly
@@ -113,6 +114,9 @@ class PostModelViewSet(viewsets.ModelViewSet):
     permission_classes = [AuthorAllStaffAllButEditOrReadOnly ]
     serializer_class =PostSerializer
     queryset = Post.objects.filter(status=True)
+
+    # def perform_create(self, serializer):
+    #     serializer.save(author=Profile.objects.get(user=self.request.user))
 
     @action(detail=False,methods=['get'])
     def get_last_post(self,request):
