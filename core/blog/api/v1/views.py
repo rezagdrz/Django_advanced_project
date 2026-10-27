@@ -13,8 +13,10 @@ from rest_framework.generics import GenericAPIView , ListCreateAPIView , Retriev
 from rest_framework.mixins import ListModelMixin , RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin , CreateModelMixin
 from rest_framework import viewsets
 from rest_framework.permissions import BasePermission
-
-
+from rest_framework.filters import SearchFilter 
+from django_filters.rest_framework import DjangoFilterBackend 
+from rest_framework.filters import SearchFilter , OrderingFilter
+from .pagination import *
 """
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -114,7 +116,13 @@ class PostModelViewSet(viewsets.ModelViewSet):
     permission_classes = [AuthorAllStaffAllButEditOrReadOnly ]
     serializer_class =PostSerializer
     queryset = Post.objects.filter(status=True)
-
+    filter_backends = [DjangoFilterBackend,SearchFilter,OrderingFilter]
+    filterset_fields = ['category','author']
+    search_fields = ['title', 'content']
+    ordering_fields = ['published_date']
+    pagination_class = CustomPagination
+    pagination_class.page_size = 5
+    
     # def perform_create(self, serializer):
     #     serializer.save(author=Profile.objects.get(user=self.request.user))
 
@@ -130,6 +138,6 @@ class CategoryModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class =CategorySerializer
     queryset = Category.objects.all()
-
+    
 
     
