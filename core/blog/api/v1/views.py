@@ -1,5 +1,5 @@
 
-from rest_framework.decorators import api_view , permission_classes , action
+from rest_framework.decorators import  action
 from rest_framework import status
 from rest_framework.response import Response
 from .serializer import PostSerializer , CategorySerializer
@@ -124,9 +124,6 @@ class PostModelViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPagination
     pagination_class.page_size = 5
     
-    # def perform_create(self, serializer):
-    #     serializer.save(author=Profile.objects.get(user=self.request.user))
-
     @action(detail=False,methods=['get'])
     def get_last_post(self,request):
         post =Post.objects.filter(status=True).order_by('-id').first()

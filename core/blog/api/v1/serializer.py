@@ -19,11 +19,11 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id','title','status','content','published_date','image','author','is_author','category','snippet','reletavie_url','absolute_url']
 
-    def get_absolute_url(self,obj):
+    def get_absolute_url(self,obj)->str:
         request = self.context.get('request')
         return request.build_absolute_uri(obj.pk)
 
-    def get_is_author(self,obj):
+    def get_is_author(self,obj)->bool:
         request = self.context.get('request')
         return request.user.email == obj.author.user.email
     

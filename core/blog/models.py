@@ -16,7 +16,7 @@ class Post(models.Model):
     published_date = models.DateTimeField()
     updated_date = models.DateTimeField(auto_now_add=True)
 
-    def get_snippet(self):
+    def get_snippet(self)->str:
         return self.content[0:5]
 
     def get_absolute_api_url(self):

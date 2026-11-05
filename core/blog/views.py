@@ -12,15 +12,15 @@ from .forms import PostForm
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin , PermissionRequiredMixin
 
-data = {
-    'name': 'ali',
-    'age':21,
-    'id':2,
-    'city':'tehran'
+# data = {
+#     'name': 'ali',
+#     'age':21,
+#     'id':2,
+#     'city':'tehran'
 
-}
+# }
 
-@api_view()
-def api_index_view(request):
-    return Response(data)
-# Create your views here.
+# @api_view()
+# def api_index_view(request):
+#     return Response(data)
+# # Create your views here.
