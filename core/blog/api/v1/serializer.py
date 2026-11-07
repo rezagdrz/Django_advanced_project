@@ -12,20 +12,20 @@ class PostSerializer(serializers.ModelSerializer):
     snippet = serializers.ReadOnlyField(source = 'get_snippet')
     reletavie_url = serializers.URLField(source = 'get_absolute_api_url',read_only =True)
     absolute_url = serializers.SerializerMethodField()
-    is_author = serializers.SerializerMethodField()
+    #is_author = serializers.SerializerMethodField()
     author = serializers.ReadOnlyField(source = 'author.user.email')
 
     class Meta:
         model = Post
-        fields = ['id','title','status','content','published_date','image','author','is_author','category','snippet','reletavie_url','absolute_url']
+        fields = ['id','title','status','content','published_date','image','author','category','snippet','reletavie_url','absolute_url']
 
     def get_absolute_url(self,obj)->str:
         request = self.context.get('request')
         return request.build_absolute_uri(obj.pk)
 
-    def get_is_author(self,obj)->bool:
-        request = self.context.get('request')
-        return request.user.email == obj.author.user.email
+    # def get_is_author(self,obj)->bool:
+    #     request = self.context.get('request')
+    #     return request.user.email == obj.author.user.email
     
     def to_representation(self, instance):
         rep = super().to_representation(instance)
