@@ -114,7 +114,7 @@ class PostDetailViewSet(viewsets.ViewSet):
 """
 
 class PostModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly ]
+    permission_classes = [IsAuthenticated,AuthorAllStaffAllButEditOrReadOnly]
     serializer_class =PostSerializer
     queryset = Post.objects.filter(status=True)
     filter_backends = [DjangoFilterBackend,SearchFilter,OrderingFilter]
@@ -129,7 +129,7 @@ class PostModelViewSet(viewsets.ModelViewSet):
         post =Post.objects.filter(status=True).order_by('-id').first()
         if post is None:
             return Response({'detail':'there are no posts '},status=status.HTTP_404_NOT_FOUND)
-        serializer = self.serializer_class(post)
+        serializer = self.get_serializer(post)
         return Response(serializer.data)
     
 class CategoryModelViewSet(viewsets.ModelViewSet):
