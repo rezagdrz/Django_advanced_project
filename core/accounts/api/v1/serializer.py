@@ -4,6 +4,7 @@ from django.contrib.auth.password_validation import  validate_password
 from ...models import User
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserRegistrationSerialize(serializers.ModelSerializer):
     password1 = serializers.CharField( write_only=True)
@@ -62,3 +63,10 @@ class CustomAuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['email']=self.user.email
+        data['user_id']=self.user.pk
+        return data

@@ -13,5 +13,6 @@ urlpatterns = [
     path('token/login/', views.CustomAuthToken.as_view(),name='token-login'),
     path('token/logout/',views.CustomDiscardToken.as_view(),name='token-logout'),
     #JWT
-    path('jwt/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
