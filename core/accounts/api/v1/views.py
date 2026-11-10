@@ -1,5 +1,6 @@
 from rest_framework.generics import GenericAPIView
-from .serializer import UserRegistrationSerialize , CustomAuthTokenSerializer , CustomTokenObtainPairSerializer
+from rest_framework import generics
+from .serializer import *
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -7,6 +8,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
+from ...models import User , Profile
+from django.shortcuts import get_object_or_404
+
 
 class RegistrationsApiViews(GenericAPIView):
     serializer_class = UserRegistrationSerialize
@@ -42,3 +46,32 @@ class CustomDiscardToken(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+class ChangePasswordApiViews(GenericAPIView):
+    model = User
+    permission_classes=[IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
+
+    def get_object(self,queryset=None):
+        return self.request.user
+    
+    def put(self,request):
+        self.object = self.get_object()
+        if not self.object.check_password(request.data['old_password']):
+            return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+        serializer=self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.object.set_password(serializer.data.get('new_password'))
+            self.object.save()
+            return Response({'success': 'password changed successfully'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class ProfileApiViews(generics.RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+    
+    def get_object(self):
+        obj = get_object_or_404(self.queryset,user=self.request.user)
+        return obj
+        

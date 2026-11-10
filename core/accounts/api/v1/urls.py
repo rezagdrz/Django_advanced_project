@@ -15,4 +15,7 @@ urlpatterns = [
     #JWT
     path('api/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    #change password
+    path('change-password/',views.ChangePasswordApiViews.as_view(),name='change-password'),
+    path('profile/',views.ProfileApiViews.as_view(),name='profile'),
 ]
